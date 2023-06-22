@@ -26,3 +26,4 @@
 ## シーケンス図
 
 - [運営用Webコンソール](admin.md)
+- [運営用アプリ](admin-mobile.md)
