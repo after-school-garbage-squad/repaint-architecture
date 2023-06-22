@@ -6,3 +6,4 @@
 ## 目次
 
 - [システム構成図](/docs/architecture/architecture.md)
+- [システムシーケンス](/docs/sequence/sequence.md)
