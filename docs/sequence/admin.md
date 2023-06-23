@@ -25,6 +25,22 @@ sequenceDiagram
     
 ```
 
+### 運営アカウント追加
+
+```mermaid
+sequenceDiagram
+    participant web as 運営コンソール
+    participant new as 新しい運営アカウント
+    participant back as バックエンドAPI
+    web ->> back: 追加したいメールアドレスを入力
+    back  ->> back: メールアドレスをイベントDBに登録
+    back ->> new: 単純なシステムログインリンクをメールに送信
+    new ->> back: Auth0でログイン
+    back ->> back: イベントに所属していることを認識
+    back ->> new: イベント一覧を返却
+    
+```
+
 ### スポット一覧
 
 ```mermaid
