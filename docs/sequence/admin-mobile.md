@@ -30,12 +30,12 @@ sequenceDiagram
 sequenceDiagram
     participant app as 運営用アプリ
     participant back as バックエンドAPI
-    alt ビーコン
+    opt ビーコン
     app ->> app: ビーコンスキャン
     app ->> back: GET(ビーコンデータ)
     back ->> app: スポット名
     end
-    alt QRコード
+    opt QRコード
     app ->> app: QRスキャン
     app ->> back: GET(スポットデータ)
     back ->> app: スポット名
