@@ -1,4 +1,6 @@
-# イベント運営用コンソール シーケンス図
+# イベント運営用コンソール
+
+## 運営Web向けシーケンス図
 
 ### イベント作成
 
@@ -6,11 +8,11 @@
 sequenceDiagram
     participant web as 運営コンソール
     participant back as バックエンドAPI
-    web ->> back: Auth0ログイン
-    back ->> web: 認証
+    web ->>+ back: Auth0ログイン
+    back ->>- web: 認証
     web ->> web: イベント情報入力
-    web ->> back: POST(イベントデータ)
-    back ->> web: 参加者用QRデータを事前発行
+    web ->>+ back: (イベントデータ)
+    back ->>- back: イベント生成
     
 ```
 
@@ -21,7 +23,7 @@ sequenceDiagram
     participant web as 運営コンソール
     participant back as バックエンドAPI
     web ->> web: イベント情報入力
-    web ->> back: POST(イベントデータ)
+    web ->> back: (イベントデータ)
     
 ```
 
@@ -32,12 +34,12 @@ sequenceDiagram
     participant web as 運営コンソール
     participant new as 新しい運営アカウント
     participant back as バックエンドAPI
-    web ->> back: 追加したいメールアドレスを入力
+    web ->>+ back: 追加したいメールアドレスを入力
     back  ->> back: メールアドレスをイベントDBに登録
-    back ->> new: 単純なシステムログインリンクをメールに送信
+    back ->>- new: 単純なシステムログインリンクをメールに送信
     new ->> back: Auth0でログイン
     back ->> back: イベントに所属していることを認識
-    back ->> new: イベント一覧を返却
+    back -->> new: イベント一覧を返却
     
 ```
 
@@ -47,8 +49,8 @@ sequenceDiagram
 sequenceDiagram
     participant web as 運営コンソール
     participant back as バックエンドAPI
-    web ->> back: GET(スポット一覧)
-    back ->> web: スポット一覧情報
+    web ->> back: スポット一覧のリクエスト
+    back -->> web: (スポット一覧)
     
 ```
 
@@ -58,8 +60,8 @@ sequenceDiagram
 sequenceDiagram
     participant web as 運営コンソール
     participant back as バックエンドAPI
-    web ->> back: POST(スポットID)
-    back ->> web: status
+    web ->> back: (スポットID)
+    back -->> web: (status)
     
 ```
 
@@ -69,9 +71,9 @@ sequenceDiagram
 sequenceDiagram
     participant web as 運営コンソール
     participant back as バックエンドAPI
-    web ->> back: GET(スポットID)
-    back --> back: QRコード生成
-    back ->> web: QRコード画像
+    web ->>+ back: (スポットID)
+    back ->> back: QRコード生成
+    back -->>- web: QRコード画像(raw)
     
 ```
 
@@ -81,9 +83,9 @@ sequenceDiagram
 sequenceDiagram
     participant web as 運営コンソール
     participant back as バックエンドAPI
-    web ->> back: GET
-    back --> back: QRコード生成
-    back ->> web: QRコード画像
+    web ->>+ back: 参加者用QR発行リクエスト
+    back ->> back: QRコード生成
+    back -->>- web: QRコード画像(raw)
     
 ```
 
@@ -93,9 +95,9 @@ sequenceDiagram
 sequenceDiagram
     participant web as 運営コンソール
     participant back as バックエンドAPI
-    web ->> back: POST(通知内容)
-    back --> back: 当てはまるユーザーに通知
-    back ->> web: status
+    web ->>+ back: 通知リクエスト(通知内容)
+    back ->> back: 当てはまるユーザーに通知
+    back -->>- web: (status)
     
 ```
 
@@ -105,9 +107,10 @@ sequenceDiagram
 sequenceDiagram
     participant web as 運営コンソール
     participant back as バックエンドAPI
-    web ->> back: ポーリング
-    back ->> web: それぞれのスポットの参加者の状況
-    
+    loop
+        web ->> back: ポーリング
+        back -->> web: それぞれのスポットの参加者の状況
+    end
 ```
 
 ### 人流制御
@@ -118,6 +121,57 @@ sequenceDiagram
     participant back as バックエンドAPI
     web ->> back: POST(from, to)
     back --> back: 人流制御開始
-    back ->> web: status
+    back -->> web: status
+    
+```
+
+## 運営モバイル向けシーケンス図
+
+### スポット登録
+
+```mermaid
+sequenceDiagram
+    participant app as 運営用アプリ
+    participant back as バックエンドAPI
+    app ->>+ app: ビーコンスキャン
+    app ->> app: スポット名入力
+    app ->>- back: (ビーコンデータ)
+    back ->> back: スポット登録
+    back -->> app: (status)
+    
+```
+
+### スポット確認
+
+```mermaid
+sequenceDiagram
+    participant app as 運営用アプリ
+    participant back as バックエンドAPI
+    opt ビーコン
+        app ->> app: ビーコンスキャン
+        app ->> back: (ビーコンデータ)
+        back -->> app: スポットデータ
+    end
+    opt QRコード
+        app ->> app: QRスキャン
+        app ->> back: (スポットデータ)
+        back -->> app: スポットデータ
+    end
+    
+```
+
+### 写真撮影
+
+```mermaid
+sequenceDiagram
+    participant app as 運営用アプリ
+    participant back as バックエンドAPI
+    app ->>+ app: 参加者QR読み取り
+    app -->>+ back: 参加者データ
+    back ->> app: 参加者確認(status)
+    app ->> app: 写真撮影
+    app ->> app: 写真確認
+    app ->>- back: (画像raw)
+    back -->>- app: (status)
     
 ```
