@@ -1,6 +1,6 @@
 # イベント運営用コンソール
 
-##  シーケンス図
+## シーケンス図
 
 ### イベント参加時
 
@@ -9,10 +9,10 @@ sequenceDiagram
     participant app as 参加者アプリ
     participant back as バックエンドAPI
     app ->> app: 参加用QRコードスキャン
-    app ->> back: {参加者データ}
-    back ->> back: UUID生成
+    app ->>+ back: (イベントQRのデータ,通知用ID)
+    back ->> back: 参加者データ,UUID生成
     back ->> back: 参加者用QRコード作成
-    back ->> app: {イベントデータ}
+    back -->>- app: (イベントデータ,参加者データ)
     
 ```
 
@@ -23,9 +23,9 @@ sequenceDiagram
     participant app as 参加者アプリ
     participant back as バックエンドAPI
     app ->> back: 通知用IDを送信
-    back ->> app: {イベントデータ,参加者データ}
+    back -->> app: (イベントデータ,参加者データ)
     alt iOSなら
-        back ->> app: ビーコンのserviceUUID一覧
+        back ->> app: (イベントの全てのビーコンデータ)
     end
     
 ```
@@ -37,9 +37,10 @@ sequenceDiagram
     participant app as 参加者アプリ
     participant back as バックエンドAPI
     app ->> back: 画像一覧リクエスト
-    back ->> app: 画像データ(完成画像サンプル)返却
+    back -->> app: 画像データ一覧(raw)
     app ->> app: 画像一覧表示
-    app ->> back: 選択画像id送信
+    app ->> back: (選択した画像のID)
+    back -->> app: (status)
     back ->> back: パレットに従ってあらかじめ画像合成を開始
 
 ```
@@ -50,24 +51,14 @@ sequenceDiagram
 sequenceDiagram
     participant app as 参加者アプリ
     participant back as バックエンドAPI
-    app ->> back: 画像リクエスト
-    alt 画像が存在していないなら(基本的に事前に画像は生成しておく)
+    app ->>+ back: 選択中の画像リクエスト
+    alt 画像が存在していないなら<基本的に事前に画像は生成しておく>
       back ->> back: 参加者の現在のパレット状況から画像を生成する
     end
-    back ->> app: 画像データ返却
-```
-
-### 画像DL
-
-```mermaid
-sequenceDiagram
-    participant app as 参加者アプリ
-    participant back as バックエンドAPI
-    app ->> back: 画像リクエスト
-    alt 画像が存在していないなら
-      back ->> back: 参加者の現在のパレット状況から画像を生成する
+    back -->>- app: パレットに応じて色付けた画像(raw)
+    alt 画像DL
+        app ->> app: 画像を保存
     end
-    back ->> app: 画像データ返却
 ```
 
 ### スポット検知
@@ -77,7 +68,7 @@ sequenceDiagram
     participant app as 参加者アプリ
     participant back as バックエンドAPI
     app ->> app: ビーコン検知
-    app ->> back: ビーコンデータ送信
+    app ->> back: (ビーコンデータ)
     back ->> back: ドロップ処理
 ```
 
@@ -88,10 +79,10 @@ sequenceDiagram
     participant app as 参加者アプリ
     participant back as バックエンドAPI
     app ->> app: QRコードスキャン
-    app ->> back: QRコードデータ送信
+    app ->>+ back: (ピック用QRコードデータ)
     alt QRコードと現在参加者がいるスポットが対応しているなら
       back ->> back: ピック処理
-      back ->> back: あらかじめ参加者のパレット状況に応じて画像合成
+      back ->>- back: あらかじめ参加者のパレット状況に応じて画像合成
     end
 ```
 
@@ -102,7 +93,7 @@ sequenceDiagram
     participant app as 参加者アプリ
     participant back as バックエンドAPI
     app ->> back: QRコードリクエスト
-    back ->> app: 参加者用QRコード返却
+    back ->> app: 参加者用QRコード(QRコード)
 ```
 
 ### 通知のON/OFF
