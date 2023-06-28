@@ -1,0 +1,15 @@
+{
+  "name": "repaint-architecture",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "markdownlint-cli2 docs/**/*.md"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "markdownlint-cli2": "^0.8.1"
+  }
+}
