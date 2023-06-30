@@ -22,7 +22,7 @@ sequenceDiagram
 sequenceDiagram
     participant app as 参加者アプリ
     participant back as バックエンドAPI
-    app ->> back: 通知用IDを送信
+    app ->> back: (参加者識別データ,通知用ID)
     back -->> app: (イベントデータ,参加者データ)
     alt iOSなら
         back ->> app: (イベントの全てのビーコンデータ)
