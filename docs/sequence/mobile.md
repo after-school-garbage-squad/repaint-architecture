@@ -36,8 +36,11 @@ sequenceDiagram
 sequenceDiagram
     participant app as 参加者アプリ
     participant back as バックエンドAPI
+    participant storage as 画像ストレージ
     app ->> back: 画像一覧リクエスト
-    back -->> app: 画像データ一覧(raw)
+    back -->> app: 画像データ一覧(id)
+    app ->> storage: 画像取得リクエスト
+    storage -->> app: 画像返却(raw)
     app ->> app: 画像一覧表示
     app ->> back: (選択した画像のID)
     back -->> app: (status)
@@ -51,11 +54,14 @@ sequenceDiagram
 sequenceDiagram
     participant app as 参加者アプリ
     participant back as バックエンドAPI
+    participant storage as 画像ストレージ
     app ->>+ back: 選択中の画像リクエスト
     alt 画像が存在していないなら<基本的に事前に画像は生成しておく>
       back ->> back: 参加者の現在のパレット状況から画像を生成する
     end
-    back -->>- app: パレットに応じて色付けた画像(raw)
+    back -->>- app: パレットに応じて色付けた画像(id)
+    app ->> storage: 画像取得リクエスト
+    storage -->> app: パレットに応じて色付けた画像(raw)
     alt 画像DL
         app ->> app: 画像を保存
     end
