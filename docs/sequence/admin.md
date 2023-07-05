@@ -2,7 +2,7 @@
 
 ## 運営Web向けシーケンス図
 
-### イベント作成
+### 運営ログイン
 
 ```mermaid
 sequenceDiagram
@@ -10,6 +10,18 @@ sequenceDiagram
     participant back as バックエンドAPI
     web ->>+ back: Auth0ログイン
     back ->>- web: 認証
+    web ->> back: 所属イベント一覧を要求
+    back -->> web: (list<event data>)
+    web ->> web: イベント一覧表示
+
+```
+
+### イベント作成
+
+```mermaid
+sequenceDiagram
+    participant web as 運営コンソール
+    participant back as バックエンドAPI
     web ->> web: イベント情報入力
     web ->>+ back: (イベントデータ)
     back ->>- back: イベント生成
