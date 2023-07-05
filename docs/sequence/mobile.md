@@ -22,7 +22,7 @@ sequenceDiagram
 sequenceDiagram
     participant app as 参加者アプリ
     participant back as バックエンドAPI
-    app ->> back: 通知用IDを送信
+    app ->> back: (参加者識別データ,通知用ID)
     back -->> app: (イベントデータ,参加者データ)
     alt iOSなら
         back ->> app: (イベントの全てのビーコンデータ)
@@ -58,6 +58,7 @@ sequenceDiagram
     app ->>+ back: 選択中の画像リクエスト
     alt 画像が存在していないなら<基本的に事前に画像は生成しておく>
       back ->> back: 参加者の現在のパレット状況から画像を生成する
+      back ->> storage: 生成した画像を保存
     end
     back -->>- app: パレットに応じて色付けた画像(id)
     app ->> storage: 画像取得リクエスト

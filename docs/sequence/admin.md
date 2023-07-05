@@ -2,7 +2,7 @@
 
 ## 運営Web向けシーケンス図
 
-### イベント作成
+### 運営ログイン
 
 ```mermaid
 sequenceDiagram
@@ -10,6 +10,18 @@ sequenceDiagram
     participant back as バックエンドAPI
     web ->>+ back: Auth0ログイン
     back ->>- web: 認証
+    web ->> back: 所属イベント一覧を要求
+    back -->> web: (list<event data>)
+    web ->> web: イベント一覧表示
+
+```
+
+### イベント作成
+
+```mermaid
+sequenceDiagram
+    participant web as 運営コンソール
+    participant back as バックエンドAPI
     web ->> web: イベント情報入力
     web ->>+ back: (イベントデータ)
     back ->>- back: イベント生成
@@ -25,6 +37,18 @@ sequenceDiagram
     web ->> web: イベント情報入力
     web ->> back: (イベントデータ)
     
+```
+
+### デフォルト画像アップロード
+
+```mermaid
+sequenceDiagram
+    participant web as 運営コンソール
+    participant back as バックエンドAPI
+    participant storage as 画像ストレージ
+    web ->> back: デフォルト画像(raw)
+    back ->> storage: 画像保存
+    storage -->> back: (更新されたイベントデータ)
 ```
 
 ### 運営アカウント追加
@@ -166,12 +190,17 @@ sequenceDiagram
 sequenceDiagram
     participant app as 運営用アプリ
     participant back as バックエンドAPI
+    participant storage as 画像ストレージ
     app ->>+ app: 参加者QR読み取り
-    app -->>+ back: 参加者データ
-    back ->> app: 参加者確認(status)
+    app ->>+ back: 参加者データ
+    back -->> app: 参加者確認(status)
+    alt 参加者がすでに写真撮影をしていた
+        app ->> app: 上書き確認
+    end
     app ->> app: 写真撮影
     app ->> app: 写真確認
     app ->>- back: (画像raw)
+    back ->> storage: 画像保存
     back -->>- app: (status)
     
 ```
