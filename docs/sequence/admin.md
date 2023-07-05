@@ -167,8 +167,11 @@ sequenceDiagram
     participant app as 運営用アプリ
     participant back as バックエンドAPI
     app ->>+ app: 参加者QR読み取り
-    app -->>+ back: 参加者データ
-    back ->> app: 参加者確認(status)
+    app ->>+ back: 参加者データ
+    back -->> app: 参加者確認(status)
+    alt 参加者がすでに写真撮影をしていた
+        app ->> app: 上書き確認
+    end
     app ->> app: 写真撮影
     app ->> app: 写真確認
     app ->>- back: (画像raw)
