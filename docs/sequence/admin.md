@@ -39,6 +39,18 @@ sequenceDiagram
     
 ```
 
+### デフォルト画像アップロード
+
+```mermaid
+sequenceDiagram
+    participant web as 運営コンソール
+    participant back as バックエンドAPI
+    participant storage as 画像ストレージ
+    web ->> back: デフォルト画像(raw)
+    back ->> storage: 画像保存
+    storage -->> back: (更新されたイベントデータ)
+```
+
 ### 運営アカウント追加
 
 ```mermaid
@@ -178,6 +190,7 @@ sequenceDiagram
 sequenceDiagram
     participant app as 運営用アプリ
     participant back as バックエンドAPI
+    participant storage as 画像ストレージ
     app ->>+ app: 参加者QR読み取り
     app ->>+ back: 参加者データ
     back -->> app: 参加者確認(status)
@@ -187,6 +200,7 @@ sequenceDiagram
     app ->> app: 写真撮影
     app ->> app: 写真確認
     app ->>- back: (画像raw)
+    back ->> storage: 画像保存
     back -->>- app: (status)
     
 ```
