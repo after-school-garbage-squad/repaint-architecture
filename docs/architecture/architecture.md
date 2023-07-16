@@ -9,4 +9,6 @@
 
 ### システム構成図
 
-![architecture](./architecture.svg)
+更新停止中
+
+~~[構成図](./architecture.svg)~~
