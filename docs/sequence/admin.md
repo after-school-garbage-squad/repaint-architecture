@@ -45,10 +45,12 @@ sequenceDiagram
 sequenceDiagram
     participant web as 運営コンソール
     participant back as バックエンドAPI
+    participant img as 画像サーバー
     participant storage as 画像ストレージ
     web ->> back: デフォルト画像(raw)
-    back ->> storage: 画像保存
-    storage -->> back: (更新されたイベントデータ)
+    back ->>+ img: 画像アップロード(raw, image_id)
+    img ->> storage: 画像保存(raw, image_id)
+    back -->> web: (更新されたイベントデータ)
 ```
 
 ### 運営アカウント追加
@@ -190,6 +192,7 @@ sequenceDiagram
 sequenceDiagram
     participant app as 運営用アプリ
     participant back as バックエンドAPI
+    participant img as 画像サーバー
     participant storage as 画像ストレージ
     app ->>+ app: 参加者QR読み取り
     app ->>+ back: 参加者データ
@@ -200,7 +203,8 @@ sequenceDiagram
     app ->> app: 写真撮影
     app ->> app: 写真確認
     app ->>- back: (画像raw)
-    back ->> storage: 画像保存
+    back ->> img: 画像アップロード(raw, image_id)
+    img ->> storage: 画像保存(raw, image_id)
     back -->>- app: (status)
     
 ```
