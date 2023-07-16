@@ -1,4 +1,4 @@
-# イベント運営用コンソール
+# イベント参加者アプリ
 
 ## シーケンス図
 
@@ -38,8 +38,8 @@ sequenceDiagram
     participant back as バックエンドAPI
     participant storage as 画像ストレージ
     app ->> back: 画像一覧リクエスト
-    back -->> app: 画像データ一覧(id)
-    app ->> storage: 画像取得リクエスト
+    back -->> app: 画像データ一覧(urls)
+    app ->> storage: いい感じの画像取得処理
     storage -->> app: 画像返却(raw)
     app ->> app: 画像一覧表示
     app ->> back: (選択した画像のID)
@@ -60,12 +60,33 @@ sequenceDiagram
       back ->> back: 参加者の現在のパレット状況から画像を生成する
       back ->> storage: 生成した画像を保存
     end
-    back -->>- app: パレットに応じて色付けた画像(id)
-    app ->> storage: 画像取得リクエスト
-    storage -->> app: パレットに応じて色付けた画像(raw)
+    back -->>- app: パレットに応じて色付けた画像のurl(url)
+    app ->> storage: いい感じに画像取得処理
+    storage -->> app: パレットに応じて色付けた画像(raw image)
     alt 画像DL
         app ->> app: 画像を保存
     end
+```
+
+### 画像取得
+
+```mermaid
+sequenceDiagram
+    participant app as 参加者
+    participant back as バックエンドAPI
+    participant img as 画像サーバー
+    participant imgdb as 画像サーバーDB
+    app ->> back: 画像URLを要求(image id)
+    back ->> img: ワンタイムURL生成要求(image id)
+    img ->> img: tokenを生成
+    img ->> imgdb: tokenを登録
+    img -->> back: idとtokenを結合しurlの形で返却(url)
+    back -->> app: (url)
+    app ->> img: urlにアクセス
+    img ->> imgdb: tokenを検証
+    img ->> imgdb: tokenを更新
+    img -->> app: 画像を返す(raw image)
+
 ```
 
 ### スポット検知
