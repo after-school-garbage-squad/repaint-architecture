@@ -9,6 +9,4 @@
 
 ### システム構成図
 
-更新停止中
-
-~~[構成図](./architecture.svg)~~
+![クラウド構成図](/imgs/gcp_architecture.png.png)
