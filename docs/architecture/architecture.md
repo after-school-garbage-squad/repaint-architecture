@@ -9,4 +9,4 @@
 
 ### システム構成図
 
-![クラウド構成図](/imgs/gcp_architecture.png.png)
+![クラウド構成図](/imgs/gcp_architecture.png)
