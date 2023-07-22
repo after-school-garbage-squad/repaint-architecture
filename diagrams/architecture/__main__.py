@@ -33,7 +33,7 @@ with Diagram("GCP Architecture", filename="imgs/gcp_architecture", show=False):
         with Cluster("Monitoring"):
             system_grafana_run = Run("System grafana")
             monitoring = Monitoring("Cloud Monitoring")
-            
+
         with Cluster("Event monitoring"):
             event_grafana_run = Run("Event grafana")
             user_grafana_func = Functions("Add user operation")
@@ -74,4 +74,3 @@ with Diagram("GCP Architecture", filename="imgs/gcp_architecture", show=False):
     image_gen_run >> monitoring
 
     visitor_mobile >> analytics
-
