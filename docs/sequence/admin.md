@@ -1,6 +1,71 @@
 # イベント運営用コンソール
 
-## 運営Web向けシーケンス図
+## シーケンス図(共通)
+
+### 画像アップロード
+
+```mermaid
+sequenceDiagram
+    participant admin as 運営コンソール
+    participant back as バックエンドAPI
+    participant img as 画像管理サーバー
+    participant pubsub as 画像クラスタリングPub/Sub
+    participant cluster as 画像クラスタリングサーバー
+    participant storage as 画像ストレージ
+    admin ->> back: 画像をアップロード(image raw)
+    back ->> img: 画像アップロードリクエスト(image raw)
+    img ->> storage: 画像保存(image raw, image_id)
+    img ->> pubsub: クラスタリングpub(image_id)
+    pubsub ->> cluster: クラスタリングsub(image_id)
+    cluster ->> cluster: クラスタリング
+    cluster ->> storage: クラスタリング結果(clustered image, palette_id)
+    cluster ->> img: クラスタリング結果通知(image_id, palette_id)
+    img ->> img: one time urlの差し替え
+
+```
+
+### 画像生成
+
+```mermaid
+sequenceDiagram
+    participant back as バックエンドAPI
+    participant img as 画像管理サーバー
+    participant pubsub as 画像生成Pub/Sub
+    participant gen as 画像生成サーバー
+    participant storage as 画像ストレージ
+    back ->> img: 画像生成・更新リクエスト(image_id, palette_id)
+    img ->> pubsub: 画像生成pub(image_id)
+    pubsub ->> gen: 画像生成sub(image_id)
+    gen ->> gen: 画像生成
+    gen ->> storage: 画像保存(image raw, image_id)
+    gen ->> img: 画像生成結果通知(image_id)
+    img ->> img: one time urlの差し替え
+
+```
+
+### 画像取得
+
+```mermaid
+sequenceDiagram
+    participant app as 参加者
+    participant back as バックエンドAPI
+    participant img as 画像管理サーバー
+    participant storage as 画像ストレージ
+    app ->> back: 画像URLを要求(image id)
+    back ->> img: one time url取得リクエスト(image id)
+    img ->> img: one time urlを生成
+    img -->> back: (one time url)
+    back -->> app: (one time url)
+    app ->> img: based on one time url
+    img ->> img: one time url検証
+    img ->> img: one time url更新
+    img ->> storage: 画像取得(image_id)
+    storage -->> img: (image raw)
+    img -->> app: (image raw)
+
+```
+
+## 運営 Web 向けシーケンス図
 
 ### 運営ログイン
 
@@ -25,7 +90,7 @@ sequenceDiagram
     web ->> web: イベント情報入力
     web ->>+ back: (イベントデータ)
     back ->>- back: イベント生成
-    
+
 ```
 
 ### イベント更新
@@ -36,7 +101,7 @@ sequenceDiagram
     participant back as バックエンドAPI
     web ->> web: イベント情報入力
     web ->> back: (イベントデータ)
-    
+
 ```
 
 ### デフォルト画像アップロード
@@ -45,7 +110,7 @@ sequenceDiagram
 sequenceDiagram
     participant web as 運営コンソール
     participant back as バックエンドAPI
-    participant img as 画像サーバー
+    participant img as 画像管理サーバー
     participant storage as 画像ストレージ
     web ->> back: デフォルト画像(raw)
     back ->>+ img: 画像アップロード(raw, image_id)
@@ -66,7 +131,7 @@ sequenceDiagram
     new ->> back: Auth0でログイン
     back ->> back: イベントに所属していることを認識
     back -->> new: イベント一覧を返却
-    
+
 ```
 
 ### スポット一覧
@@ -77,7 +142,7 @@ sequenceDiagram
     participant back as バックエンドAPI
     web ->> back: スポット一覧のリクエスト
     back -->> web: (スポット一覧)
-    
+
 ```
 
 ### スポット削除
@@ -88,10 +153,10 @@ sequenceDiagram
     participant back as バックエンドAPI
     web ->> back: (スポットID)
     back -->> web: (status)
-    
+
 ```
 
-### スポットQR発行
+### スポット QR 発行
 
 ```mermaid
 sequenceDiagram
@@ -100,10 +165,10 @@ sequenceDiagram
     web ->>+ back: (スポットID)
     back ->> back: QRコード生成
     back -->>- web: QRコード画像(raw)
-    
+
 ```
 
-### 参加用イベントQR発行
+### 参加用イベント QR 発行
 
 ```mermaid
 sequenceDiagram
@@ -112,7 +177,7 @@ sequenceDiagram
     web ->>+ back: 参加者用QR発行リクエスト
     back ->> back: QRコード生成
     back -->>- web: QRコード画像(raw)
-    
+
 ```
 
 ### 手動通知
@@ -124,7 +189,7 @@ sequenceDiagram
     web ->>+ back: 通知リクエスト(通知内容)
     back ->> back: 当てはまるユーザーに通知
     back -->>- web: (status)
-    
+
 ```
 
 ### 人流監視
@@ -148,7 +213,7 @@ sequenceDiagram
     web ->> back: POST(from, to)
     back --> back: 人流制御開始
     back -->> web: status
-    
+
 ```
 
 ## 運営モバイル向けシーケンス図
@@ -164,7 +229,7 @@ sequenceDiagram
     app ->>- back: (ビーコンデータ)
     back ->> back: スポット登録
     back -->> app: (status)
-    
+
 ```
 
 ### スポット確認
@@ -183,7 +248,7 @@ sequenceDiagram
         app ->> back: (スポットデータ)
         back -->> app: スポットデータ
     end
-    
+
 ```
 
 ### 写真撮影
@@ -192,7 +257,7 @@ sequenceDiagram
 sequenceDiagram
     participant app as 運営用アプリ
     participant back as バックエンドAPI
-    participant img as 画像サーバー
+    participant img as 画像管理サーバー
     participant storage as 画像ストレージ
     app ->>+ app: 参加者QR読み取り
     app ->>+ back: 参加者データ
@@ -206,5 +271,5 @@ sequenceDiagram
     back ->> img: 画像アップロード(raw, image_id)
     img ->> storage: 画像保存(raw, image_id)
     back -->>- app: (status)
-    
+
 ```

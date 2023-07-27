@@ -4,25 +4,7 @@
 
 ### func: 画像取得処理
 
-```mermaid
-sequenceDiagram
-    participant app as 参加者
-    participant back as バックエンドAPI
-    participant img as 画像サーバー
-    participant storage as 画像ストレージ
-    app ->> back: 画像URLを要求(image id)
-    back ->> img: one time url取得リクエスト(image id)
-    img ->> img: one time urlを生成
-    img -->> back: (one time url)
-    back -->> app: (one time url)
-    app ->> img: based on one time url
-    img ->> img: one time url検証
-    img ->> img: one time url更新
-    img ->> storage: 画像取得(image_id)
-    storage -->> img: (image raw)
-    img -->> app: (image raw)
-
-```
+[運営用 Web コンソールのシーケンス図を参照](admin.md#画像取得処理)
 
 ## シーケンス図(ケース)
 
@@ -37,7 +19,7 @@ sequenceDiagram
     back ->> back: 参加者データ,UUID生成
     back ->> back: 参加者用QRコード作成
     back -->>- app: (イベントデータ,参加者データ)
-    
+
 ```
 
 ### アプリ起動時(イベント参加以降)
@@ -51,7 +33,7 @@ sequenceDiagram
     alt iOSなら
         back ->> app: (イベントの全てのビーコンデータ)
     end
-    
+
 ```
 
 ### 画像選択
@@ -78,7 +60,7 @@ sequenceDiagram
 sequenceDiagram
     participant app as 参加者アプリ
     participant back as バックエンドAPI
-    participant img as 画像サーバー
+    participant img as 画像管理サーバー
     participant storage as 画像ストレージ
     app ->>+ back: 選択中の画像リクエスト
     alt 画像が存在していないなら<基本的に事前に画像は生成しておく>
@@ -107,7 +89,7 @@ sequenceDiagram
     back ->> back: ドロップ処理
 ```
 
-### ピック用QRコードスキャン
+### ピック用 QR コードスキャン
 
 ```mermaid
 sequenceDiagram
@@ -121,7 +103,7 @@ sequenceDiagram
     end
 ```
 
-### 参加者用QRコード表示
+### 参加者用 QR コード表示
 
 ```mermaid
 sequenceDiagram
@@ -131,7 +113,7 @@ sequenceDiagram
     back ->> app: 参加者用QRコード(QRコード)
 ```
 
-### 通知のON/OFF
+### 通知の ON/OFF
 
 ```mermaid
 sequenceDiagram
