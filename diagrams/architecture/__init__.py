@@ -4,6 +4,7 @@ from diagrams.gcp.compute import AppEngine, Run, Functions
 from diagrams.gcp.database import SQL, Datastore
 from diagrams.gcp.storage import Storage
 from diagrams.gcp.operations import Monitoring
+from diagrams.gcp.analytics import Pubsub
 from diagrams.firebase.grow import Messaging
 from diagrams.firebase.base import Firebase
 from diagrams.generic.device import Mobile, Tablet
@@ -29,6 +30,7 @@ with Diagram("GCP Architecture", filename="imgs/gcp_architecture", show=False):
         with Cluster("Image Processing"):
             image_clustering_run = Run("Image clustering")
             image_gen_run = Run("Image generation")
+            image_pubsub = Pubsub("Image pub/sub")
 
         with Cluster("Monitoring"):
             system_grafana_run = Run("System grafana")
@@ -56,8 +58,9 @@ with Diagram("GCP Architecture", filename="imgs/gcp_architecture", show=False):
     backend_app >> user_grafana_func >> event_grafana_run
     backend_sql >> event_grafana_run
 
-    backend_app >> image_clustering_run >> image_storage
-    admin_tablet >> image_gen_run >> image_storage
+    backend_app >> image_pubsub
+    image_pubsub >> image_clustering_run >> image_storage
+    image_pubsub >> image_gen_run >> image_storage
 
     image_manage_run >> image_manage_db
     image_manage_run >> image_storage
@@ -65,12 +68,14 @@ with Diagram("GCP Architecture", filename="imgs/gcp_architecture", show=False):
     monitoring >> system_grafana_run
     analytics >> system_grafana_run
 
-    backend_app >> monitoring
-    backend_sql >> monitoring
-    backend_nosql >> monitoring
-    image_manage_run >> monitoring
-    image_storage >> monitoring
-    image_clustering_run >> monitoring
-    image_gen_run >> monitoring
+    def drawMonitoring():
+        backend_app >> monitoring
+        backend_sql >> monitoring
+        backend_nosql >> monitoring
+        image_manage_run >> monitoring
+        image_storage >> monitoring
+        image_clustering_run >> monitoring
+        image_gen_run >> monitoring
+        image_pubsub >> monitoring
 
     visitor_mobile >> analytics
