@@ -44,6 +44,7 @@ def drawArchitecture(is_service=False):
         with Cluster("Event monitoring"):
             event_grafana_run = Run("Event grafana") if not is_service else Grafana("Event grafana")
             user_grafana_func = Functions("Add user operation") if not is_service else Python("Add user operation")
+            event_log_nosql = Datastore("Event log DB")
 
     with Cluster("Firebase"):
         analytics = Firebase("Analytics")
@@ -59,9 +60,10 @@ def drawArchitecture(is_service=False):
     backend_app >> backend_sql
     backend_app >> backend_nosql
     backend_app >> fcm >> visitor_mobile
+    backend_app >> event_log_nosql
 
     backend_app >> user_grafana_func >> event_grafana_run
-    backend_sql >> event_grafana_run
+    event_log_nosql >> event_grafana_run
 
     backend_app >> image_pubsub
     image_pubsub >> image_clustering_func >> image_storage
@@ -82,6 +84,7 @@ def drawArchitecture(is_service=False):
         image_clustering_func >> monitoring
         image_gen_func >> monitoring
         image_pubsub >> monitoring
+        event_log_nosql >> monitoring
 
     visitor_mobile >> analytics
 
