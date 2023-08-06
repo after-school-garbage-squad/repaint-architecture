@@ -12,6 +12,7 @@ from diagrams.onprem.database import PostgreSQL
 from diagrams.onprem.monitoring import Grafana
 from diagrams.programming.framework import Flutter, React
 from diagrams.programming.language import Python, Rust
+from diagrams.onprem.network import Nginx
 
 
 def drawArchitecture(is_service=False):
@@ -28,7 +29,8 @@ def drawArchitecture(is_service=False):
             backend_nosql = Datastore("Backend Palette DB")
 
         with Cluster("Image Manage"):
-            image_manage_run = Run("Image Manage System")
+            image_nginx_run = Run("Image Proxy") if not is_service else Nginx("Image Proxy")
+            image_auth_run = Run("Image Auth") if not is_service else Python("Image Auth")
             image_manage_db = SQL("Image Manage DB") if not is_service else PostgreSQL("Image Manage DB")
             image_storage = Storage("Image storage")
 
@@ -55,7 +57,7 @@ def drawArchitecture(is_service=False):
 
     armor >> backend_run
     armor >> event_grafana_run
-    armor >> image_manage_run
+    armor >> image_nginx_run
 
     backend_run >> backend_sql
     backend_run >> backend_nosql
@@ -69,8 +71,10 @@ def drawArchitecture(is_service=False):
     image_pubsub >> image_clustering_func >> image_storage
     image_pubsub >> image_gen_func >> image_storage
 
-    image_manage_run >> image_manage_db
-    image_manage_run >> image_storage
+    image_nginx_run >> image_storage
+    image_nginx_run >> image_auth_run
+    image_auth_run >> image_manage_db
+    backend_run >> image_auth_run
 
     monitoring >> system_grafana_run
     analytics >> system_grafana_run
@@ -79,7 +83,8 @@ def drawArchitecture(is_service=False):
         backend_run >> monitoring
         backend_sql >> monitoring
         backend_nosql >> monitoring
-        image_manage_run >> monitoring
+        image_nginx_run >> monitoring
+        image_auth_run >> monitoring
         image_storage >> monitoring
         image_clustering_func >> monitoring
         image_gen_func >> monitoring
