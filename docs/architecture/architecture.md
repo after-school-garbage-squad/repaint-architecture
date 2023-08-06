@@ -2,11 +2,13 @@
 
 ## 概要
 
-- クラウドはGCPを使用
+- クラウドは GCP を使用
 - 基本的にすべてサーバレス設計
-- 外部から叩くAPIはApp EngineのBack-end APIを必ず経由する
-- 監視はFirebase AnalyticsやCloud Monitoringでメトリクスを取得し、Grafanaで可視化する
+- 外部から叩く API は App Engine の Back-end API を必ず経由する
+- 監視は Firebase Analytics や Cloud Monitoring でメトリクスを取得し、Grafana で可視化する
 
 ### システム構成図
 
 ![クラウド構成図](/imgs/gcp_architecture.png)
+
+![サービス構成図](/imgs/service_architecture.png)
