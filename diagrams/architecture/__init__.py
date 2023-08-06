@@ -33,8 +33,8 @@ def drawArchitecture(is_service=False):
             image_storage = Storage("Image storage")
 
         with Cluster("Image Processing"):
-            image_clustering_run = Run("Image clustering") if not is_service else Python("Image clustering")
-            image_gen_run = Run("Image generation") if not is_service else Python("Image generation")
+            image_clustering_func = Functions("Image clustering") if not is_service else Python("Image clustering")
+            image_gen_func = Functions("Image generation") if not is_service else Python("Image generation")
             image_pubsub = Pubsub("Image pub/sub")
 
         with Cluster("Monitoring"):
@@ -64,8 +64,8 @@ def drawArchitecture(is_service=False):
     backend_sql >> event_grafana_run
 
     backend_app >> image_pubsub
-    image_pubsub >> image_clustering_run >> image_storage
-    image_pubsub >> image_gen_run >> image_storage
+    image_pubsub >> image_clustering_func >> image_storage
+    image_pubsub >> image_gen_func >> image_storage
 
     image_manage_run >> image_manage_db
     image_manage_run >> image_storage
@@ -79,8 +79,8 @@ def drawArchitecture(is_service=False):
         backend_nosql >> monitoring
         image_manage_run >> monitoring
         image_storage >> monitoring
-        image_clustering_run >> monitoring
-        image_gen_run >> monitoring
+        image_clustering_func >> monitoring
+        image_gen_func >> monitoring
         image_pubsub >> monitoring
 
     visitor_mobile >> analytics
