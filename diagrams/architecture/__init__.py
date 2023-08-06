@@ -1,6 +1,6 @@
 from diagrams import Diagram, Cluster, Edge
 from diagrams.gcp.network import Armor
-from diagrams.gcp.compute import AppEngine, Run, Functions
+from diagrams.gcp.compute import Run, Functions
 from diagrams.gcp.database import SQL, Datastore
 from diagrams.gcp.storage import Storage
 from diagrams.gcp.operations import Monitoring
@@ -23,7 +23,7 @@ def drawArchitecture(is_service=False):
         armor = Armor("Armor")
 
         with Cluster("Back-end API"):
-            backend_app = AppEngine("Back-end API") if not is_service else Rust("Back-end API")
+            backend_run = Run("Back-end API") if not is_service else Rust("Back-end API")
             backend_sql = SQL("Backend DB") if not is_service else PostgreSQL("Backend DB")
             backend_nosql = Datastore("Backend Palette DB")
 
@@ -53,19 +53,19 @@ def drawArchitecture(is_service=False):
     visitor_mobile >> armor
     admin_tablet >> armor
 
-    armor >> backend_app
+    armor >> backend_run
     armor >> event_grafana_run
     armor >> image_manage_run
 
-    backend_app >> backend_sql
-    backend_app >> backend_nosql
-    backend_app >> fcm >> visitor_mobile
-    backend_app >> event_log_nosql
+    backend_run >> backend_sql
+    backend_run >> backend_nosql
+    backend_run >> fcm >> visitor_mobile
+    backend_run >> event_log_nosql
 
-    backend_app >> user_grafana_func >> event_grafana_run
+    backend_run >> user_grafana_func >> event_grafana_run
     event_log_nosql >> event_grafana_run
 
-    backend_app >> image_pubsub
+    backend_run >> image_pubsub
     image_pubsub >> image_clustering_func >> image_storage
     image_pubsub >> image_gen_func >> image_storage
 
@@ -76,7 +76,7 @@ def drawArchitecture(is_service=False):
     analytics >> system_grafana_run
 
     def drawMonitoring():
-        backend_app >> monitoring
+        backend_run >> monitoring
         backend_sql >> monitoring
         backend_nosql >> monitoring
         image_manage_run >> monitoring
