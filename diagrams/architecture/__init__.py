@@ -94,8 +94,8 @@ def drawArchitecture(is_service=False):
     visitor_mobile >> analytics
 
 
-with Diagram("GCP Architecture", filename="imgs/gcp_architecture", show=False):
+with Diagram("GCP Architecture", filename="docs/architecture/imgs/gcp_architecture", show=False):
     drawArchitecture()
 
-with Diagram("Service Architecture", filename="imgs/service_architecture", show=False):
+with Diagram("Service Architecture", filename="docs/architecture/imgs/service_architecture", show=False):
     drawArchitecture(is_service=True)

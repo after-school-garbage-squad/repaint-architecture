@@ -9,6 +9,6 @@
 
 ### システム構成図
 
-![クラウド構成図](/imgs/gcp_architecture.png)
+![クラウド構成図](./imgs/gcp_architecture.png)
 
-![サービス構成図](/imgs/service_architecture.png)
+![サービス構成図](./imgs/service_architecture.png)
