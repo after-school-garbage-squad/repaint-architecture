@@ -12,6 +12,8 @@
 - シーケンス
   - 管理者の招待
 - フィーバーの仕様
+- 画像のクラスタリングの方法
+- 画像サーバーの pub/sub の仕様
 
 ## 仕様
 
@@ -105,4 +107,22 @@ API サーバーは Rust で作成する。
 
 #### バックエンド API サーバー
 
-#### バックエンド画像処理
+各要件を満たすような API を提供する。
+[API スキーマのリポジトリ](https://github.com/after-school-garbage-squad/repaint-schema)
+
+#### 画像処理
+
+Pub/Sub により、バックエンド API サーバーから画像処理のリクエストを受け取り、画像処理を行う。
+
+- 画像のクラスタリング
+  画像の色をパレットに分けて、パレット別の透過 png を生成する。
+- 画像の合成
+  リクエストをもとにパレットの透過 png を合成する。
+
+#### 画像取得ワンタイム認証サーバー
+
+[repaint-image-otp のリポジトリ](https://github.com/after-school-garbage-squad/repaint-image-otp)
+
+Nginx と連携し、通常の URL をワンタイム URL にする。
+
+画像取得 URL が、`https://example.com/image/1234567890`の場合、`https://example.com/image/1234567890?token=abcdefg`のように、`token`パラメータを付与する。
