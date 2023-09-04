@@ -2,17 +2,17 @@
 
 ## システムの全体像・概要
 
-[システム構成・アーキテクチャ図](../../architecture/architecture.md)
+- [システム構成・アーキテクチャ図](../../architecture/architecture.md)
 
-[各システムの機能・要件](../overview/README.md)
+- [各システムの機能・要件](../overview/README.md)
 
 ## 処理するべき内容
 
-[シーケンス図](../../sequence/sequence.md)
+- [シーケンス図](../../sequence/sequence.md)
 
 ## 詳細な仕様
 
-[データ関連](./data.md)
+- [データ関連](./data.md)
 
 - [ビーコン](./data.md#ビーコン)
 - [QR コード](./data.md#QRコード)
@@ -27,4 +27,4 @@
 - [ボーナスの仕様](./logic/README.md#ボーナスの仕様)
 - [画像処理についての仕様](./logic/README.md#画像処理についての仕様)
 
-[イベントログ](./event_log.md)
+- [イベントログ](./event_log.md)
