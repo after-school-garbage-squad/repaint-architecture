@@ -4,8 +4,9 @@
 
 - シーケンス
   - 管理者の招待
-- 画像のクラスタリングの方法
 - 画像サーバーの pub/sub の仕様
+  - 画像処理サーバーの外部とのやり取りの方法
+    - 画像データの扱い
 
 ## 仕様
 
@@ -103,6 +104,8 @@ API サーバーは Rust で作成する。
 [API スキーマのリポジトリ](https://github.com/after-school-garbage-squad/repaint-schema)
 
 #### 画像処理
+
+[画像処理についての仕様](../system/logic/image.md)
 
 Pub/Sub により、バックエンド API サーバーから画像処理のリクエストを受け取り、画像処理を行う。
 
