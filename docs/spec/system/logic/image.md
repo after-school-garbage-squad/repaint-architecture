@@ -4,6 +4,13 @@
 
 画像処理で透過画像を用いるため、画像は png で扱う。
 
+### 画像認証
+
+[repaint-image-otp のリポジトリ](https://github.com/after-school-garbage-squad/repaint-image-otp)
+
+通常のURLにOne Time Tokenを付与することで、画像の取得を行う。
+画像認証サーバーに直接アクセスするのは(画像認証サーバーのAPIを叩くのは)NginxとバックエンドAPIサーバーのみである。
+
 ### 参加者の画像の選択
 
 参加者は、複数枚存在しうる画像の内、一枚を選択した状態にする。
