@@ -1,87 +1,8 @@
 # イベント運営用コンソール
 
-## シーケンス図(共通)
-
-### 画像アップロード
-
-```mermaid
-sequenceDiagram
-    participant admin as 運営コンソール
-    participant back as バックエンドAPI
-    participant img as 画像管理サーバー
-    participant pubsub as 画像クラスタリングPub/Sub
-    participant cluster as 画像クラスタリングサーバー
-    participant storage as 画像ストレージ
-    admin ->> back: 画像をアップロード(image raw)
-    back ->> img: 画像アップロードリクエスト(image raw)
-    img ->> storage: 画像保存(image raw, image_id)
-    img ->> pubsub: クラスタリングpub(image_id)
-    pubsub ->> cluster: クラスタリングsub(image_id)
-    cluster ->> cluster: クラスタリング
-    cluster ->> storage: クラスタリング結果(clustered image, palette_id)
-    cluster ->> img: クラスタリング結果通知(image_id, palette_id)
-    img ->> img: one time urlの差し替え
-
-```
-
-### 画像生成
-
-```mermaid
-sequenceDiagram
-    participant back as バックエンドAPI
-    participant img as 画像管理サーバー
-    participant pubsub as 画像生成Pub/Sub
-    participant gen as 画像生成サーバー
-    participant storage as 画像ストレージ
-    back ->> img: 画像生成・更新リクエスト(image_id, palette_id)
-    img ->> pubsub: 画像生成pub(image_id)
-    pubsub ->> gen: 画像生成sub(image_id)
-    gen ->> gen: 画像生成
-    gen ->> storage: 画像保存(image raw, image_id)
-    gen ->> img: 画像生成結果通知(image_id)
-    img ->> img: one time urlの差し替え
-
-```
-
-### 画像取得
-
-```mermaid
-sequenceDiagram
-    participant app as 参加者
-    participant back as バックエンドAPI
-    participant img as 画像管理サーバー
-    participant storage as 画像ストレージ
-    app ->> back: 画像URLを要求(image id)
-    back ->> img: one time url取得リクエスト(image id)
-    img ->> img: one time urlを生成
-    img -->> back: (one time url)
-    back -->> app: (one time url)
-    app ->> img: based on one time url
-    img ->> img: one time url検証
-    img ->> img: one time url更新
-    img ->> storage: 画像取得(image_id)
-    storage -->> img: (image raw)
-    img -->> app: (image raw)
-
-```
-
 ## 運営 Web 向けシーケンス図
 
-### 運営ログイン
-
-```mermaid
-sequenceDiagram
-    participant web as 運営コンソール
-    participant back as バックエンドAPI
-    web ->>+ back: Auth0ログイン
-    back ->>- web: 認証
-    web ->> back: 所属イベント一覧を要求
-    back -->> web: (list<event data>)
-    web ->> web: イベント一覧表示
-
-```
-
-### イベント作成
+### [イベント作成](../spec/overview/README.md#イベントの作成・設定)
 
 ```mermaid
 sequenceDiagram
@@ -93,7 +14,10 @@ sequenceDiagram
 
 ```
 
-### イベント更新
+- [イベントデータ](../spec/system/data.md#イベントデータ)
+- [イベント参加 QR](../spec/system/data.md#LP/イベント参加兼用コード)
+
+### [イベント更新](../spec/overview/README.md#イベントの作成・設定)
 
 ```mermaid
 sequenceDiagram
@@ -104,21 +28,9 @@ sequenceDiagram
 
 ```
 
-### デフォルト画像アップロード
+- [イベントデータ](../spec/system/data.md#イベントデータ)
 
-```mermaid
-sequenceDiagram
-    participant web as 運営コンソール
-    participant back as バックエンドAPI
-    participant img as 画像管理サーバー
-    participant storage as 画像ストレージ
-    web ->> back: デフォルト画像(raw)
-    back ->>+ img: 画像アップロード(raw, image_id)
-    img ->> storage: 画像保存(raw, image_id)
-    back -->> web: (更新されたイベントデータ)
-```
-
-### 運営アカウント追加
+### [運営アカウント追加](../spec/overview/README.md#イベント管理者の招待)
 
 ```mermaid
 sequenceDiagram
@@ -126,73 +38,33 @@ sequenceDiagram
     participant new as 新しい運営アカウント
     participant back as バックエンドAPI
     web ->>+ back: 追加したいメールアドレスを入力
-    back  ->> back: メールアドレスをイベントDBに登録
-    back ->>- new: 単純なシステムログインリンクをメールに送信
+    back ->> new: 招待専用のログインリンクをメールに送信
     new ->> back: Auth0でログイン
-    back ->> back: イベントに所属していることを認識
-    back -->> new: イベント一覧を返却
+    back ->> back: ユーザー情報を登録
+    back -->>- new: イベント一覧を返却
 
 ```
 
-### スポット一覧
+### [スポットの設定](../spec/overview/README.md#スポットの詳細設定)
+
+スポット名の変更・ピックの切り替え・スポットの削除・QR の発行を行う
 
 ```mermaid
 sequenceDiagram
     participant web as 運営コンソール
     participant back as バックエンドAPI
-    web ->> back: スポット一覧のリクエスト
+    web ->> back: スポット一覧リクエスト
     back -->> web: (スポット一覧)
+    web ->> web: スポットの設定
+    web ->> web: ピック用QRコードの取得
+    web ->> back: (スポットデータ)
 
 ```
 
-### スポット削除
+- [スポットデータ](../spec/system/data.md#スポット)
+- [ピック用 QR コード](../spec/system/data.md#ピックスポットのパレット取得コード)
 
-```mermaid
-sequenceDiagram
-    participant web as 運営コンソール
-    participant back as バックエンドAPI
-    web ->> back: (スポットID)
-    back -->> web: (status)
-
-```
-
-### スポット QR 発行
-
-```mermaid
-sequenceDiagram
-    participant web as 運営コンソール
-    participant back as バックエンドAPI
-    web ->>+ back: (スポットID)
-    back ->> back: QRコード生成
-    back -->>- web: QRコード画像(raw)
-
-```
-
-### 参加用イベント QR 発行
-
-```mermaid
-sequenceDiagram
-    participant web as 運営コンソール
-    participant back as バックエンドAPI
-    web ->>+ back: 参加者用QR発行リクエスト
-    back ->> back: QRコード生成
-    back -->>- web: QRコード画像(raw)
-
-```
-
-### 手動通知
-
-```mermaid
-sequenceDiagram
-    participant web as 運営コンソール
-    participant back as バックエンドAPI
-    web ->>+ back: 通知リクエスト(通知内容)
-    back ->> back: 当てはまるユーザーに通知
-    back -->>- web: (status)
-
-```
-
-### 人流監視
+### [人流監視](../spec/overview/README.md#人流制御)
 
 ```mermaid
 sequenceDiagram
@@ -204,7 +76,9 @@ sequenceDiagram
     end
 ```
 
-### 人流制御
+- [スポットの状況](../spec/system/data.md#スポットのイベントログ)
+
+### [人流制御](../spec/overview/README.md#人流制御)
 
 ```mermaid
 sequenceDiagram
@@ -213,63 +87,5 @@ sequenceDiagram
     web ->> back: POST(from, to)
     back --> back: 人流制御開始
     back -->> web: status
-
-```
-
-## 運営モバイル向けシーケンス図
-
-### スポット登録
-
-```mermaid
-sequenceDiagram
-    participant app as 運営用アプリ
-    participant back as バックエンドAPI
-    app ->>+ app: ビーコンスキャン
-    app ->> app: スポット名入力
-    app ->>- back: (ビーコンデータ)
-    back ->> back: スポット登録
-    back -->> app: (status)
-
-```
-
-### スポット確認
-
-```mermaid
-sequenceDiagram
-    participant app as 運営用アプリ
-    participant back as バックエンドAPI
-    opt ビーコン
-        app ->> app: ビーコンスキャン
-        app ->> back: (ビーコンデータ)
-        back -->> app: スポットデータ
-    end
-    opt QRコード
-        app ->> app: QRスキャン
-        app ->> back: (スポットデータ)
-        back -->> app: スポットデータ
-    end
-
-```
-
-### 写真撮影
-
-```mermaid
-sequenceDiagram
-    participant app as 運営用アプリ
-    participant back as バックエンドAPI
-    participant img as 画像管理サーバー
-    participant storage as 画像ストレージ
-    app ->>+ app: 参加者QR読み取り
-    app ->>+ back: 参加者データ
-    back -->> app: 参加者確認(status)
-    alt 参加者がすでに写真撮影をしていた
-        app ->> app: 上書き確認
-    end
-    app ->> app: 写真撮影
-    app ->> app: 写真確認
-    app ->>- back: (画像raw)
-    back ->> img: 画像アップロード(raw, image_id)
-    img ->> storage: 画像保存(raw, image_id)
-    back -->>- app: (status)
 
 ```
