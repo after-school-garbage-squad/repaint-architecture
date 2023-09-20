@@ -2,9 +2,7 @@
 
 ## 運営 Web 向けシーケンス図
 
-TODO: 未改修
-
-### イベント作成
+### [イベント作成](../spec/overview/README.md#イベントの作成・設定)
 
 ```mermaid
 sequenceDiagram
@@ -16,7 +14,10 @@ sequenceDiagram
 
 ```
 
-### イベント更新
+- [イベントデータ](../spec/system/data.md#イベントデータ)
+- [イベント参加 QR](../spec/system/data.md#LP/イベント参加兼用コード)
+
+### [イベント更新](../spec/overview/README.md#イベントの作成・設定)
 
 ```mermaid
 sequenceDiagram
@@ -27,21 +28,9 @@ sequenceDiagram
 
 ```
 
-### デフォルト画像アップロード
+- [イベントデータ](../spec/system/data.md#イベントデータ)
 
-```mermaid
-sequenceDiagram
-    participant web as 運営コンソール
-    participant back as バックエンドAPI
-    participant img as 画像管理サーバー
-    participant storage as 画像ストレージ
-    web ->> back: デフォルト画像(raw)
-    back ->>+ img: 画像アップロード(raw, image_id)
-    img ->> storage: 画像保存(raw, image_id)
-    back -->> web: (更新されたイベントデータ)
-```
-
-### 運営アカウント追加
+### [運営アカウント追加](../spec/overview/README.md#イベント管理者の招待)
 
 ```mermaid
 sequenceDiagram
@@ -49,73 +38,33 @@ sequenceDiagram
     participant new as 新しい運営アカウント
     participant back as バックエンドAPI
     web ->>+ back: 追加したいメールアドレスを入力
-    back  ->> back: メールアドレスをイベントDBに登録
-    back ->>- new: 単純なシステムログインリンクをメールに送信
+    back ->> new: 招待専用のログインリンクをメールに送信
     new ->> back: Auth0でログイン
-    back ->> back: イベントに所属していることを認識
-    back -->> new: イベント一覧を返却
+    back ->> back: ユーザー情報を登録
+    back -->>- new: イベント一覧を返却
 
 ```
 
-### スポット一覧
+### [スポットの設定](../spec/overview/README.md#スポットの詳細設定)
+
+スポット名の変更・ピックの切り替え・スポットの削除・QR の発行を行う
 
 ```mermaid
 sequenceDiagram
     participant web as 運営コンソール
     participant back as バックエンドAPI
-    web ->> back: スポット一覧のリクエスト
+    web ->> back: スポット一覧リクエスト
     back -->> web: (スポット一覧)
+    web ->> web: スポットの設定
+    web ->> web: ピック用QRコードの取得
+    web ->> back: (スポットデータ)
 
 ```
 
-### スポット削除
+- [スポットデータ](../spec/system/data.md#スポット)
+- [ピック用 QR コード](../spec/system/data.md#ピックスポットのパレット取得コード)
 
-```mermaid
-sequenceDiagram
-    participant web as 運営コンソール
-    participant back as バックエンドAPI
-    web ->> back: (スポットID)
-    back -->> web: (status)
-
-```
-
-### スポット QR 発行
-
-```mermaid
-sequenceDiagram
-    participant web as 運営コンソール
-    participant back as バックエンドAPI
-    web ->>+ back: (スポットID)
-    back ->> back: QRコード生成
-    back -->>- web: QRコード画像(raw)
-
-```
-
-### 参加用イベント QR 発行
-
-```mermaid
-sequenceDiagram
-    participant web as 運営コンソール
-    participant back as バックエンドAPI
-    web ->>+ back: 参加者用QR発行リクエスト
-    back ->> back: QRコード生成
-    back -->>- web: QRコード画像(raw)
-
-```
-
-### 手動通知
-
-```mermaid
-sequenceDiagram
-    participant web as 運営コンソール
-    participant back as バックエンドAPI
-    web ->>+ back: 通知リクエスト(通知内容)
-    back ->> back: 当てはまるユーザーに通知
-    back -->>- web: (status)
-
-```
-
-### 人流監視
+### [人流監視](../spec/overview/README.md#人流制御)
 
 ```mermaid
 sequenceDiagram
@@ -127,7 +76,9 @@ sequenceDiagram
     end
 ```
 
-### 人流制御
+- [スポットの状況](../spec/system/data.md#スポットのイベントログ)
+
+### [人流制御](../spec/overview/README.md#人流制御)
 
 ```mermaid
 sequenceDiagram
@@ -136,40 +87,5 @@ sequenceDiagram
     web ->> back: POST(from, to)
     back --> back: 人流制御開始
     back -->> web: status
-
-```
-
-## 運営モバイル向けシーケンス図
-
-### スポット登録
-
-```mermaid
-sequenceDiagram
-    participant app as 運営用アプリ
-    participant back as バックエンドAPI
-    app ->>+ app: ビーコンスキャン
-    app ->> app: スポット名入力
-    app ->>- back: (ビーコンデータ)
-    back ->> back: スポット登録
-    back -->> app: (status)
-
-```
-
-### スポット確認
-
-```mermaid
-sequenceDiagram
-    participant app as 運営用アプリ
-    participant back as バックエンドAPI
-    opt ビーコン
-        app ->> app: ビーコンスキャン
-        app ->> back: (ビーコンデータ)
-        back -->> app: スポットデータ
-    end
-    opt QRコード
-        app ->> app: QRスキャン
-        app ->> back: (スポットデータ)
-        back -->> app: スポットデータ
-    end
 
 ```

@@ -179,12 +179,21 @@ sequenceDiagram
     participant beacon as ビーコン
     participant app as 参加者アプリ
     participant back as バックエンドAPI
-    app ->> app: スキャン開始
-    beacon ->> app: (ビーコンデータ)
-    app ->> back: (ビーコンデータ)
-    back ->> app: (スポットデータ)
-    app ->> app: 表示
+    opt ビーコン
+        app ->> app: スキャン開始
+        beacon ->> app: (ビーコンデータ)
+        app ->> back: (ビーコンデータ)
+        back ->> app: (スポットデータ)
+        app ->> app: 表示
+    end
+    opt QRコード
+        app ->> beacon: QRスキャン
+        beacon -->> app: (ピック用QRコードデータ)
+        app ->> back: (スポットデータ)
+        back -->> app: スポットデータ
+    end
 ```
 
 - [ビーコンデータ](../spec/system/data.md#ビーコン)
 - [スポットデータ](../spec/system/data.md#スポット)
+- [ピック用 QR コードデータ](../spec/system/data.md#ピックスポットのパレット取得コード)
