@@ -4,8 +4,6 @@
 
 ### 画像取得
 
-TODO: 以下は未改修
-
 ```mermaid
 sequenceDiagram
     participant app as 参加者
@@ -13,14 +11,13 @@ sequenceDiagram
     participant img as 画像管理サーバー
     participant storage as 画像ストレージ
     app ->> back: 画像URLを要求(image id)
-    back ->> img: one time url取得リクエスト(image id)
-    img ->> img: one time urlを生成
+    back ->> back: idからurlに変換
+    back ->> img: urlにトークンを付与
     img -->> back: (one time url)
     back -->> app: (one time url)
     app ->> img: based on one time url
-    img ->> img: one time url検証
-    img ->> img: one time url更新
-    img ->> storage: 画像取得(image_id)
+    img ->> img: 色々認証
+    img ->> storage: リバースプロキシとして取得
     storage -->> img: (image raw)
     img -->> app: (image raw)
 
@@ -34,11 +31,12 @@ sequenceDiagram
 sequenceDiagram
     participant web as 運営コンソール
     participant back as バックエンドAPI
-    web ->>+ back: Auth0ログイン
-    back ->>- web: 認証
-    web ->> back: 所属イベント一覧を要求
-    back -->> web: (list<event data>)
-    web ->> web: イベント一覧表示
+    participant auth0 as Auth0
+    web ->> auth0: Auth0ログイン
+    auth0 ->> web: トークン
+    web ->> back: トークン
+    back ->> auth0: JWT検証
+    auth0 ->> back: 認証情報
 
 ```
 
@@ -50,18 +48,18 @@ sequenceDiagram
     participant back as バックエンドAPI
     participant img as 画像管理サーバー
     participant storage as 画像ストレージ
-    app ->>+ app: 参加者QR読み取り
-    app ->>+ back: 参加者データ
+    app ->> app: 参加者QR読み取り
+    app ->> back: 参加者データ
     back -->> app: 参加者確認(status)
     alt 参加者がすでに写真撮影をしていた
         app ->> app: 上書き確認
     end
     app ->> app: 写真撮影
     app ->> app: 写真確認
-    app ->>- back: (画像raw)
+    app ->> back: (画像raw)
     back ->> img: 画像アップロード(raw, image_id)
     img ->> storage: 画像保存(raw, image_id)
-    back -->>- app: (status)
+    back -->> app: (status)
 
 ```
 
@@ -84,6 +82,7 @@ sequenceDiagram
     cluster ->> storage: クラスタリング結果(clustered image, palette_id)
     cluster ->> img: クラスタリング結果通知(image_id, palette_id)
     img ->> img: one time urlの差し替え
+    img ->> back: 画像の更新通知
 
 ```
 
@@ -103,5 +102,6 @@ sequenceDiagram
     gen ->> storage: 画像保存(image raw, image_id)
     gen ->> img: 画像生成結果通知(image_id)
     img ->> img: one time urlの差し替え
+    img ->> back: 画像の更新通知
 
 ```
