@@ -4,9 +4,9 @@
 
 ### func: 画像取得処理
 
-[運営用 Web コンソールのシーケンス図を参照](admin.md#画像取得処理)
+[運営用 Web コンソールのシーケンス図を参照](common.md#画像取得処理)
 
-## シーケンス図(ケース)
+## イベント参加者のシーケンス
 
 ### [イベント参加時](../spec/overview/README.md#イベント参加-QR-Sスキャン)
 
@@ -152,3 +152,39 @@ sequenceDiagram
     app ->> back: 参加者データ削除リクエスト
     back ->> back: 参加者データ削除
 ```
+
+## イベント運営のシーケンス
+
+[モバイル・コンソール共通の運営シーケンス](common.md#運営)
+
+### [ビーコン・スポットの登録](../spec/overview/README.md#ビーコン・スポットの登録)
+
+```mermaid
+sequenceDiagram
+    participant beacon as ビーコン
+    participant app as 参加者アプリ
+    participant back as バックエンドAPI
+    app ->> app: スポット登録処理開始
+    beacon ->> app: (ビーコンデータ)
+    app ->> app: スポット名の入力
+    app ->> back: (スポット名,ビーコンデータ)
+```
+
+- [ビーコンデータ](../spec/system/data.md#ビーコン)
+
+### [スポットの確認](../spec/overview/README.md#スポットの確認)
+
+```mermaid
+sequenceDiagram
+    participant beacon as ビーコン
+    participant app as 参加者アプリ
+    participant back as バックエンドAPI
+    app ->> app: スキャン開始
+    beacon ->> app: (ビーコンデータ)
+    app ->> back: (ビーコンデータ)
+    back ->> app: (スポットデータ)
+    app ->> app: 表示
+```
+
+- [ビーコンデータ](../spec/system/data.md#ビーコン)
+- [スポットデータ](../spec/system/data.md#スポット)
