@@ -127,10 +127,10 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant app as 参加者アプリ
-    participant back as バックエンドAPI
-    app ->> back: QRコードリクエスト
-    back ->> app: 参加者用QRコード(QRコード)
+    app ->> app: 参加者用QRコード生成
 ```
+
+- [参加者用 QR コード](../spec/system/data.md#参加者識別コード)
 
 ### [通知の受信](../spec/overview/README.md#通知)
 
