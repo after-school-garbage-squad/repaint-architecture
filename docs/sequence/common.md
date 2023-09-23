@@ -86,6 +86,8 @@ sequenceDiagram
 
 ```
 
+- [画像の更新通知](#画像更新)
+
 ### 画像生成
 
 ```mermaid
@@ -103,5 +105,29 @@ sequenceDiagram
     gen ->> img: 画像生成結果通知(image_id)
     img ->> img: one time urlの差し替え
     img ->> back: 画像の更新通知
+
+```
+
+- [画像の更新通知](#画像更新)
+
+### 画像更新
+
+```mermaid
+sequenceDiagram
+    participant mobile as アプリ
+    participant back as バックエンドAPI
+    participant img as 画像処理サーバー
+    participant storage as 画像ストレージ
+    back ->> img: 画像処理リクエスト(image_id, palette_ids, visitor_id)
+    img ->> img: 画像処理
+    img ->> back: 画像更新通知(visitor_id)
+    loop ポーリング
+        mobile ->> back: 画像が最終確認時間から更新されているか
+        opt 画像が更新されているなら
+            mobile ->> back: 画像取得urlリクエスト(image_id)
+            back -->> back: idからurlに変換
+            mobile ->> storage: urlから画像を取得
+        end
+    end
 
 ```
