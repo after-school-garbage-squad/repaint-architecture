@@ -6,5 +6,5 @@
 ## 目次
 
 - [システム構成図](/docs/architecture/architecture.md)
-- [システムシーケンス](/docs/sequence/sequence.md)
+- [システムシーケンス](/docs/sequence/README.md)
 - [仕様](/docs/spec/README.md)

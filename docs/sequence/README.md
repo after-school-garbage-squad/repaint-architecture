@@ -8,6 +8,7 @@
 
 - [運営用 Web コンソール](admin.md)
 - [参加者用アプリ](mobile.md)
+- [共通](common.md)
 
 ## 前提
 

@@ -28,7 +28,7 @@ sequenceDiagram
 - [イベントデータ](../spec/system/data.md#イベントデータ)
 - [参加者データ](../spec/system/data.md#参加者アカウントのデータ)
 
-### アプリ起動時(イベント参加以降)
+### [アプリ起動時(イベント参加以降)](../spec/overview/README.md#アプリ起動時の更新)
 
 ```mermaid
 sequenceDiagram
