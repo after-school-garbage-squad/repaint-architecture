@@ -122,6 +122,22 @@ sequenceDiagram
     end
 ```
 
+### 画像一覧取得
+
+```mermaid
+sequenceDiagram
+    participant app as 参加者アプリ
+    participant back as バックエンドAPI
+    participant img as 画像管理サーバー
+    app ->>+ back: 画像一覧リクエスト
+    loop 画像
+      back ->> back: 画像を生成
+    end
+    back -->>- app: 画像一覧返却(ids)
+    app ->> img: func: 画像取得処理
+    img -->> app: 色付けされた画像を返す(png)
+```
+
 ### [参加者用 QR コード表示](../spec/overview/README.md#参加者-QR-表示)
 
 ```mermaid
